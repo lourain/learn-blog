@@ -12,7 +12,7 @@ const web_router = require('./route/web')
 const article_router = require('./route/article')
 const blog_router = require('./route/blog')
 //1.获取请求数据
-app.use(bodyParser.urlencoded())
+app.use(bodyParser.urlencoded({extended:false}))
 var db = mysql.createPool({
     host:'http://122.152.219.175',
     user: 'root',
