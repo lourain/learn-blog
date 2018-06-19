@@ -1,6 +1,6 @@
 const express = require('express')
 const mysql = require('mysql')
-const cookieSession = require('cookie-session')
+const session = require('express-session')
 const cookieParser = require('cookie-parser')
 const multer = require('multer')
 const bodyParser = require('body-parser')
@@ -20,15 +20,18 @@ var db = mysql.createPool({
     database: 'learn'
 })
 //2.cookie session
-app.use(cookieParser('luyw'))
+app.use(cookieParser('lyw'))
 {
     let keys = []
     for (let index = 0; index < 1000; index++) {
         keys.push(Math.random() * 1000)
     }
-    app.use(cookieSession({
+    app.use(session({
+        secret:'lyw',
         name: 'sess_id',
         keys: keys,
+        resave:true,
+        saveUninitialized:true,
         maxAge: 20 * 60 * 1000
     }))
 }

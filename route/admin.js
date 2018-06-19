@@ -1,6 +1,5 @@
 const express = require('express')
-const app = express()
-const router = express.Router()
+var router = express.Router()
 const common = require('../lib/common')
 const mysql = require('mysql')
 
@@ -12,17 +11,23 @@ const db = mysql.createPool({
 })
 
 router.use((req, res, next) => {
-    if (!req.session['sess_id'] && req.url != '/login') {
+    console.log(req.session.test)
+    // console.log(req.session['admin_id'])
+    if (!req.session['admin_id'] && req.url != '/login') {
         res.redirect('/admin/login')
     } else {
         next()
     }
-
 })
+
 router.get('/login', (req, res) => {
+    console.log(req.session.test)
+    // console.log(req.session['admin_id'])
     res.render('../template/admin/login.ejs')
 })
+
 router.post('/login', (req, res) => {
+    req.session.test = 'test'
     var username = req.body.username
     var password = common.md5(req.body.password + common.md5_suffix)
     db.query(`SELECT * FROM admin_table WHERE username='${username}'`, (err, data) => {
@@ -30,15 +35,11 @@ router.post('/login', (req, res) => {
             console.error(err);
             res.status(500).send('database is error').end()
         } else {
-            console.log(data);
-
             if (data.length == 0) {
                 res.status(400).send('no this username').end()
             } else {
                 if (data[0].password === password) {
-                    console.log(true);
-
-                    req.session['sess_id'] = data.ID;
+                    req.session['admin_id'] = data[0].ID;
                     res.redirect('/admin/')
                 } else {
                     res.status(400).send('this password is iscorrect').end()
@@ -46,7 +47,10 @@ router.post('/login', (req, res) => {
             }
         }
     })
-
-
+})
+router.get('/',(req,res)=>{
+    console.log(req.session.test);
+    
+    res.send('nice')
 })
 module.exports = router
