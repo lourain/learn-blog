@@ -43,47 +43,58 @@ router.post('/login', (req, res) => {
         }
     })
 })
-router.get('/',(req,res)=>{
-    res.render('../template/admin/index.ejs',{})
+router.get('/', (req, res) => {
+    res.render('../template/admin/index.ejs', {})
 })
-router.get('/banners',(req,res)=>{
-//删除或是修改操作
+router.get('/banners', (req, res) => {
+    //删除或是修改操作
     var act = req.query.act
-    var id = req.query.id 
-    if(act == 'amend'){
-        
-    }else if(act == 'delete'){
-        console.log(12313123);
-        db.query(`DELETE FROM banner_table WHERE ID = '${id}'`, (err, banners) => {
+    var id = req.query.id
+    db.query(`SELECT * FROM banner_table`, (err, banners) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('database error').end()
+        } else {
+            if (act == 'amend') {
+                db.query(`SELECT * FROM banner_table WHERE ID = ${id}`, (err, value) => {
+                    if (err) {
+                        console.error(err);
+                        res.status(500).send('database error').end()
+                    } else {
+                        res.render('../template/admin/banner.ejs', { banners:banners,value: value[0], amend: true })
+                    }
+                })
+            } else if (act == 'delete') {
+                db.query(`DELETE FROM banner_table WHERE ID = '${id}'`, (err, banners) => {
+                    if (err) {
+                        console.error(err);
+                        res.status(500).send('database error').end()
+                    } else {
+                        res.redirect('/admin/banners').end()
+                    }
+                })
+            }else{
+                res.render('../template/admin/banner.ejs', { banners: banners, amend: false })
+            }
+        }
+    })
+    
+    
+    
+
+})
+router.post('/banners', (req, res) => {
+    var title = req.body.title
+    var description = req.body.description
+    var href = req.body.href
+    if (!title || !description || !href) {
+        res.status(400).send('参数错误').end()
+    } else {
+        db.query(`INSERT INTO banner_table (title,description,href) value ('${title}','${description}','${href}')`, (err, data) => {
             if (err) {
                 console.error(err);
                 res.status(500).send('database error').end()
             } else {
-               res.redirect('/admin/banners').end()
-            }
-        })
-    }
-    db.query(`SELECT * FROM banner_table`,(err,banners)=>{
-        if(err){
-            console.error(err);
-            res.status(500).send('database error').end()
-        }else{
-            res.render('../template/admin/banner.ejs',{banners:banners})
-        }
-    })
-})
-router.post('/banners',(req,res)=>{
-    var title = req.body.title
-    var description = req.body.description
-    var href = req.body.href
-    if(!title || !description || !href){
-        res.status(400).send('参数错误').end()
-    }else{
-        db.query(`INSERT INTO banner_table (title,description,href) value ('${title}','${description}','${href}')`,(err,data)=>{
-            if (err) {
-                console.error(err);
-                res.status(500).send('database error').end()
-            }else{
                 res.redirect('/admin/banners')
             }
         })
