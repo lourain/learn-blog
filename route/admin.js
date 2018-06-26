@@ -87,17 +87,32 @@ router.post('/banners', (req, res) => {
     var title = req.body.title
     var description = req.body.description
     var href = req.body.href
+    var id = req.body.amend_id
     if (!title || !description || !href) {
         res.status(400).send('参数错误').end()
+    }else if (false){
+        console.log(123);
     } else {
-        db.query(`INSERT INTO banner_table (title,description,href) value ('${title}','${description}','${href}')`, (err, data) => {
-            if (err) {
-                console.error(err);
-                res.status(500).send('database error').end()
-            } else {
-                res.redirect('/admin/banners')
-            }
-        })
+        if(req.body.amend_id){
+            db.query(`UPDATE banner_table SET title='${title}',description='${description}',href='${href}' WHERE ID=${id};`,(err,data)=>{
+                if (err) {
+                    console.error(err);
+                    res.status(500).send('database error').end()
+                } else {
+                    res.redirect('/admin/banners')
+                }
+            })
+        }else{
+            db.query(`INSERT INTO banner_table (title,description,href) value ('${title}','${description}','${href}')`, (err, data) => {
+                if (err) {
+                    console.error(err);
+                    res.status(500).send('database error').end()
+                } else {
+                    res.redirect('/admin/banners')
+                }
+            })
+        }
+        
     }
 })
 

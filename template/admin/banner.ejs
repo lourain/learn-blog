@@ -13,8 +13,8 @@
                 <br>
             </form>
         <%}else{%>
-            
             <form action="?" method="post">
+                    <input type="hidden" name="amend_id" value="<%=value.ID%>">
                     标题：
                     <input type="text" name="title" value="<%=value.title%>" />
                     <br> 描述：
