@@ -11,35 +11,28 @@ const admin_router = require('./route/admin')
 const web_router = require('./route/web')
 const article_router = require('./route/article')
 const blog_router = require('./route/blog')
-//1.获取请求数据
-app.use(bodyParser.urlencoded({extended:false}))
 var db = mysql.createPool({
     host:'http://122.152.219.175',
     user: 'root',
     password: 'wsxrk007',
     database: 'learn'
 })
-//2.cookie session
+//1.获取请求数据
+ app.use(bodyParser.urlencoded({extended:false}))
 app.use(cookieParser('lyw'))
-{
-    let keys = []
-    for (let index = 0; index < 1000; index++) {
-        keys.push(Math.random() * 1000)
-    }
+//2.cookie session
     app.use(session({
-        secret:'lyw',
+        secret:'lyw',  
         name: 'sess_id',
-        keys: keys,
         resave:true,
         saveUninitialized:true,
         maxAge: 20 * 60 * 1000
     }))
-}
+    //3.模板
+    // app.engine('html',consolidate.ejs)
+    app.set('view engine',consolidate.ejs)
+    app.set('views','template')
 
-//3.模板
-app.engine('html',consolidate.ejs)
-app.set('view engine','html')
-app.set('views','template')
 
 //4.router
 app.use('/admin',admin_router)
